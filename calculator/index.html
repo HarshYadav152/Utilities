@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            background: #f4f4f4;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            background: #222;
+            padding: 24px 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+        }
+        .display {
+            width: 220px;
+            height: 48px;
+            margin-bottom: 20px;
+            background: #111;
+            color: #fff;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            box-sizing: border-box;
+            border: none;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 56px);
+            gap: 10px;
+        }
+        button {
+            height: 48px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 6px;
+            background: #444;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button.operator {
+            background: #ff9500;
+            color: #fff;
+        }
+        button.equal {
+            background: #1e90ff;
+            color: #fff;
+            grid-column: span 2;
+        }
+        button.clear {
+            background: #e63946;
+            color: #fff;
+            grid-column: span 2;
+        }
+        button:active {
+            background: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" disabled>
+        <div class="buttons">
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('/')">÷</button>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="appendOperator('-')">−</button>
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendDot('.')">.</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+            <button class="equal" onclick="calculate()">=</button>
+            <button class="clear" onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        let currentInput = '';
+        let lastInput = '';
+        let lastOperator = '';
+        let resetNext = false;
+
+        function appendNumber(num) {
+            if (resetNext) {
+                currentInput = '';
+                resetNext = false;
+            }
+            if (num === '0' && currentInput === '0') return;
+            currentInput += num;
+            display.value = currentInput;
+        }
+
+        function appendDot(dot) {
+            if (resetNext) {
+                currentInput = '';
+                resetNext = false;
+            }
+            if (!currentInput.includes('.')) {
+                currentInput += dot;
+                display.value = currentInput;
+            }
+        }
+
+        function appendOperator(operator) {
+            if (currentInput === '' && display.value !== '') {
+                currentInput = display.value;
+            }
+            if (currentInput === '') return;
+            lastInput = currentInput;
+            lastOperator = operator;
+            currentInput = '';
+            display.value += ' ' + operator + ' ';
+        }
+
+        function calculate() {
+            let expression = display.value;
+            try {
+                // Replace the division and multiplication symbols for eval
+                expression = expression.replace(/÷/g, '/').replace(/×/g, '*');
+                let result = eval(expression);
+                display.value = result;
+                currentInput = result.toString();
+                resetNext = true;
+            } catch (e) {
+                display.value = "Error";
+                currentInput = '';
+                resetNext = true;
+            }
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            lastInput = '';
+            lastOperator = '';
+            display.value = '';
+        }
+    </script>
+</body>
+</html>
